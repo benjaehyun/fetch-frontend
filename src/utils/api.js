@@ -105,4 +105,4 @@ class FetchAPI {
     }
 }; 
 
-export default endpoints; 
+export default FetchAPI; 
