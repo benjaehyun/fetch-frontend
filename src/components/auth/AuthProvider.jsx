@@ -1,5 +1,5 @@
 import React, {createContext, useContext, useState} from 'react';
-// import api service util here 
+import FetchAPI from '../../utils/api';
 
 const AuthContext = createContext(null); 
 
@@ -8,7 +8,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (name, email) => {
         try {
-            await api.auth.login({ name, email });
+            await FetchAPI.login({ name, email });
             setUser({ name, email });
             return true;
         } catch (error) {
@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         try {
-            await api.auth.logout();
+            await FetchAPI.logout();
             setUser(null);
         } catch (error) {
             console.error('Logout failed:', error);
