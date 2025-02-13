@@ -3,7 +3,7 @@ import { AuthProvider } from './components/auth/AuthProvider';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Login from './pages/Login';
 import Search from './pages/Search';
-import Layout from './components/shared/Layout';
+import Layout from './components/ui/Layout';
 
 function App() {
   return (
