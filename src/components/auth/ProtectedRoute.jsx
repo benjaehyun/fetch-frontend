@@ -1,18 +1,21 @@
-import React from 'react'
-import { Navigate } from 'react-router-dom';
+import React from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './AuthProvider';
 
+const ProtectedRoute = ({ children }) => {
+    const { user, isLoading } = useAuth();
+    const location = useLocation();
 
-const ProtectedRoute = ({children}) => {
-    // get user data from context provider
-    const { user } = useAuth();
-
-    // only allow access to app if the user is authenticated, otherwise direct to login
-    if (!user) {
-        return <Navigate to="/login" replace />;
+    if (isLoading) {
+        return <div>Loading...</div>; // Or a proper loading component
     }
 
-    return children; 
-}
+    if (!user) {
+        // Store the attempted URL to redirect back after login
+        return <Navigate to="/login" state={{ from: location }} replace />;
+    }
 
-export default ProtectedRoute; 
+    return children;
+};
+
+export default ProtectedRoute;

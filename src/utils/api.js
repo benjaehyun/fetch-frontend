@@ -1,6 +1,12 @@
 import axios from 'axios'; 
 import { FETCH_API_BASE_URL } from '../constants';
 
+// custom event for auth based errors to avoid looping issues 
+export const AUTH_ERROR_EVENT = 'fetch-auth-error';
+const emitAuthError = () => {
+    window.dispatchEvent(new Event(AUTH_ERROR_EVENT));
+};
+
 // Create the axios instance 
 const axiosInstance = axios.create({
     baseURL: FETCH_API_BASE_URL,
@@ -9,6 +15,17 @@ const axiosInstance = axios.create({
         'Content-Type': 'application/json',
     }
 }); 
+
+axiosInstance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        // Check if the error is an auth error (401)
+        if (error.response?.status === 401) {
+            emitAuthError();
+        }
+        return Promise.reject(error);
+    }
+);
 
 // class based api utility
 class FetchAPI {
@@ -74,13 +91,13 @@ class FetchAPI {
         }
     }
 
-    // Locations endpoints
+    // location endpoints
     static async searchLocations(searchParams) {
         try {
             const response = await axiosInstance.post('/locations/search', searchParams);
             return {
-            results: response.data.results,
-            total: response.data.total
+                results: response.data.results,
+                total: response.data.total
             };
         } catch (error) {
             this.handleError(error);
