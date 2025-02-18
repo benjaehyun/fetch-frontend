@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Container,
@@ -6,7 +6,8 @@ import {
   Paper,
   TextField,
   Button,
-  Typography
+  Typography, 
+  Alert
 } from '@mui/material';
 import { useAuth } from '../components/auth/AuthProvider';
 
@@ -17,19 +18,45 @@ const Login = () => {
         email: ''
     });
     const [isLoading, setIsLoading] = useState(false); 
+    const [error, setError] = useState('');
+
     const navigate = useNavigate(); 
     const {login} = useAuth();  
 
+    // validate email using regex
+    const isValidEmail = (email) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
+
+    const validation = useMemo(() => {
+        const nameValid = formData.name.trim().length > 0; 
+        const emailValid = isValidEmail(formData.email); 
+        return {
+            isValid: nameValid && emailValid,
+            nameError: formData.name.length > 0 && !nameValid ? 'Name is required' : '',
+            emailError: formData.email.length > 0 && !emailValid ? 'Please enter a valid email' : ''
+        };
+    }, [formData.name, formData.email])
+
     const handleSubmit = async (e) => {
-        e.prevenDefault(); 
+        e.preventDefault(); 
+
+        // early return if form is not valid 
+        if (!validation.isValid) { 
+            return;
+        }
         setIsLoading(true); 
+        setError('');
 
         try {
             const success = await login(formData.name.trim(), formData.email.trim());
             if(success) {
                 navigate('/'); 
+            } else {
+                setError('Login failed. Please try again.');
             }
         } catch (error) {
+            setError('An unexpected error occurred. Please try again.');
             console.error(error);
         } finally {
             setIsLoading(false); 
@@ -42,6 +69,7 @@ const Login = () => {
             ...prevData,
             [name]: value
         }));
+        if (error) setError(''); // need to be sure to clear the error when making changes to form 
     };
 
     return (
@@ -80,6 +108,15 @@ const Login = () => {
                         Find the newest addition to your home
                     </Typography>
 
+                    {error && (
+                        <Alert 
+                        severity='error'
+                        sx={{ width: '100%', mb: 2}}
+                        >
+                            {error}
+                        </Alert>
+                    )}
+
                     <Box 
                     component='form'
                     onSubmit={handleSubmit}
@@ -94,6 +131,8 @@ const Login = () => {
                         onChange={handleChange}
                         disabled={isLoading}
                         sx={{mb:2}}
+                        error={!!validation.nameError}
+                        helperText={validation.nameError}
                         />
                         
                         <TextField
@@ -106,6 +145,8 @@ const Login = () => {
                         onChange={handleChange}
                         disabled={isLoading}
                         sx={{mb:2}}
+                        error={!!validation.emailError}
+                        helperText={validation.emailError}
                         />
 
                         <Button 
@@ -113,8 +154,11 @@ const Login = () => {
                         fullWidth
                         variant='contained'
                         size='large'
-                        disabled={isLoading}
-                        sx={{py:1.5}}
+                        disabled={isLoading || !validation.isValid}
+                        sx={{
+                            py:1.5,
+                            bgcolor: !validation.isValid ? 'action.disabledBackground' : 'primary.main'
+                        }}
                         >
                             {isLoading ? 'Logging in' : 'Login'}
                         </Button>
