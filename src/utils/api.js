@@ -13,6 +13,9 @@ const axiosInstance = axios.create({
     withCredentials: true,  //include for auth cookies
     headers: {
         'Content-Type': 'application/json',
+    },
+    paramsSerializer: {
+        indexes: null
     }
 }); 
 
