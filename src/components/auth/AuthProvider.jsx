@@ -9,6 +9,14 @@ export const AuthProvider = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // add favorites/match info for centralized handling between the app
+    const [favorites, setFavorites] = useState(new Set());
+    const [matchState, setMatchState] = useState({
+        matchedDogId: null,
+        isExpanded: false,
+        isAnimating: false
+    });
+
     // check to see if the user is currently in a valid session with an initial call 
     useEffect(() => {
         const verifySession = async () => {
@@ -46,7 +54,7 @@ export const AuthProvider = ({ children }) => {
         setIsLoading(true);
         try {
             await FetchAPI.login({ name, email });
-            // Login successful, we can set user immediately
+            // successful login, we can set user immediately
             setUser({ name, email, isAuthenticated: true });
             setError(null);
             return true;
@@ -63,9 +71,16 @@ export const AuthProvider = ({ children }) => {
         setIsLoading(true);
         try {
             await FetchAPI.logout();
-            // Logout successful, clear user 
+            // Logout successful, clear user and other session info 
             setUser(null);
             setError(null);
+            setUser(null);
+            setFavorites(new Set());
+            setMatchState({
+                matchedDogId: null,
+                isExpanded: false,
+                isAnimating: false
+            });
         } catch (error) {
             setError('Logout failed');
         } finally {
@@ -73,8 +88,74 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // new logic for toggling favorites
+    const toggleFavorite = (dogId) => {
+        setFavorites(prev => {
+            const newFavorites = new Set(prev);
+            if (newFavorites.has(dogId)) {
+                newFavorites.delete(dogId);
+                // make sure that if we unfavorite a match, then we also clear the match
+                if (dogId === matchState.matchedDogId) {
+                    setMatchState({
+                        matchedDogId: null,
+                        isExpanded: false,
+                        isAnimating: false
+                    });
+                }
+            } else {
+                newFavorites.add(dogId);
+            }
+            return newFavorites;
+        });
+    };
+
+    // matching logic 
+    const generateMatch = async () => {
+        if (favorites.size === 0) return;
+        try {
+            setMatchState(prev => ({ ...prev, isAnimating: true }));
+            const matchedDogId = await FetchAPI.getMatch(Array.from(favorites)); // be sure we're changing the set back to array 
+            setMatchState({
+                matchedDogId,
+                isExpanded: false,
+                isAnimating: false
+            });
+        } catch (error) {
+            console.error('Failed to generate match:', error);
+            setMatchState(prev => ({ ...prev, isAnimating: false }));
+        }
+    };
+
+    const clearMatch = () => {
+        setMatchState({
+            matchedDogId: null,
+            isExpanded: false,
+            isAnimating: false
+        });
+    };
+
+    // toggle for match display 
+    const toggleMatchExpanded = () => {
+        setMatchState(prev => ({ 
+            ...prev, 
+            isExpanded: !prev.isExpanded 
+        }));
+    };
+
     return (
-        <AuthContext.Provider value={{ user, login, logout, error, isLoading }} >
+        <AuthContext.Provider value={{ 
+            user, 
+            login, 
+            logout, 
+            error, 
+            isLoading,
+            favorites,
+            toggleFavorite,
+            matchState,
+            generateMatch,
+            toggleMatchExpanded,
+            clearMatch
+            }} >
             {children}
         </AuthContext.Provider>
     )

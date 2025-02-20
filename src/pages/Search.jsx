@@ -29,7 +29,9 @@ const styles = {
 
 const Search = () => {
     const [searchState, setSearchState] = useState(defaultSearchState);
-  
+
+
+    // refactor to switch case for handling update, reset, or search trigger 
     const handleSearchUpdate = (type, payload) => {
         switch (type) {
             case 'reset':
@@ -48,9 +50,7 @@ const Search = () => {
                     isSearching: true
                 }));
                 break;
-            default:
-                console.warn('Unknown update type:', type);
-            }
+        }
     };
 
     const handleSearch = () => {
@@ -60,8 +60,8 @@ const Search = () => {
 
     return (
     <Container maxWidth="lg" sx={styles.container}>
-      {/* top bar with changes for deprecated grid version*/}
-        <Grid item size={{xs: 12}} sx={styles.breedSelect}>  
+      {/* top bar with changes for deprecated grid mui component */}
+        <Grid item='true' size={{xs: 12}} sx={styles.breedSelect}>  
                 <BreedSelect 
                     selectedBreeds={searchState.breeds}
                     onBreedsChange={breeds => handleSearchUpdate('update', { breeds })}
@@ -71,19 +71,19 @@ const Search = () => {
 
             {/* main content grid */}
             <Grid container spacing={3}>
-                <Grid item size={{xs: 12, md: 3}}>
-                <SearchFilters 
-                    searchState={searchState}
-                    onSearchUpdate={handleSearchUpdate}
-                    onSearch={handleSearch}
-                />
+                <Grid item='true' size={{xs: 12, md: 3}}>
+                    <SearchFilters 
+                        searchState={searchState}
+                        onSearchUpdate={handleSearchUpdate}
+                        onSearch={handleSearch}
+                    />
                 </Grid>
                 
                 {/* Results */}
-                <Grid item size={{xs: 12, md: 9}}>
-                <SearchResults 
-                    searchState={searchState}
-                />
+                <Grid item='true' size={{xs: 12, md: 9}}>
+                    <SearchResults 
+                        searchState={searchState}
+                    />
                 </Grid>
         </Grid>
     </Container>

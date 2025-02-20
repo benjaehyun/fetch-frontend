@@ -3,6 +3,7 @@ import { AuthProvider } from './components/auth/AuthProvider';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Login from './pages/Login';
 import Search from './pages/Search';
+import Favorites from './pages/Favorites'; 
 import Layout from './components/ui/Layout';
 
 function App() {
@@ -20,7 +21,15 @@ function App() {
 					element={
 						// Protected route wrapper ensuring auth status 
 						<ProtectedRoute>
-						<Search />
+                            <Search />
+						</ProtectedRoute>
+					}
+					/>
+					<Route
+					path="/favorites"
+					element={
+						<ProtectedRoute>
+                            <Favorites />
 						</ProtectedRoute>
 					}
 					/>

@@ -40,6 +40,7 @@ const BreedSelect = ({ selectedBreeds, onBreedsChange, onSearch }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // get most up-to date list of breeds from api when we mount this component 
     useEffect(() => {
         const fetchBreeds = async () => {
         try {
@@ -56,6 +57,7 @@ const BreedSelect = ({ selectedBreeds, onBreedsChange, onSearch }) => {
         fetchBreeds();
     }, []);
 
+    // adjust to append to array of breeds for multiple selection
     const handleBreedSelect = (event) => {
         const breed = event.target.value;
         if (!breed) return;
@@ -79,29 +81,36 @@ const BreedSelect = ({ selectedBreeds, onBreedsChange, onSearch }) => {
         <Box>
             <Box sx={styles.selectionContainer}>
                 <FormControl sx={styles.formControl}>
-                <InputLabel>Filter by Breed</InputLabel>
-                <Select
-                    value=""
-                    label="Filter by Breed"
-                    onChange={handleBreedSelect}
-                    disabled={loading || availableBreeds.length === 0}
-                >
-                    {availableBreeds.map((breed) => (
-                        <MenuItem key={breed} value={breed}>
-                            {breed}
-                        </MenuItem>
-                    ))}
-                </Select>
+                    <InputLabel>Filter by Breed</InputLabel>
+                    <Select
+                        value=""
+                        label="Filter by Breed"
+                        onChange={handleBreedSelect}
+                        disabled={loading || availableBreeds.length === 0}
+                        // added for aria warning
+                        MenuProps={{
+                            autoFocus: false, 
+                            disableAutoFocusItem: true
+                        }}
+                    >
+                        {availableBreeds.map((breed) => (
+                            <MenuItem key={breed} value={breed}>
+                                {breed}
+                            </MenuItem>
+                        ))}
+                    </Select>
                 </FormControl>
+                {/* Second search button for easy way to search on mobile and desktop */}
                 <IconButton 
                 onClick={onSearch}
                 sx={styles.searchButton}
                 aria-label="Search dogs"
                 >
-                <SearchIcon />
+                    <SearchIcon />
                 </IconButton>
             </Box>
             
+            {/* Chips with selected breeds that can be removed with a click */}
             <Box sx={styles.chipContainer}>
                 {selectedBreeds.length === 0 ? (
                     <Chip 

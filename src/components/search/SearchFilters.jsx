@@ -40,16 +40,16 @@ const styles = {
     },
     buttonContainer: {
         display: 'flex',
-        gap: 1
+        gap: 1, 
     },
     clearIcon: {
         fontSize: 20,
-        width: 20,
-        height: 20, 
+        height: 20,
         mr: 0
     }
 };
 
+// aliases for displaying the sort method and the state that it's stored as, for the params
 const sortOptions = [
     { value: 'breed:asc', label: 'Breed (A-Z)' },
     { value: 'breed:desc', label: 'Breed (Z-A)' },
@@ -66,25 +66,25 @@ const SearchFilters = ({
 }) => {
     const [expanded, setExpanded] = useState(false);
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const isMobile = useMediaQuery(theme.breakpoints.down('md')); // mobile breakpoint for expandable display
 
     const handleAgeRangeChange = (_, newValue) => {
         onSearchUpdate('update', {
-        ageMin: newValue[0],
-        ageMax: newValue[1]
+            ageMin: newValue[0],
+            ageMax: newValue[1]
         });
     };
 
     const handleZipCodeChange = (event) => {
-        const value = event.target.value.replace(/\D/g, '').slice(0, 5);
+        const value = event.target.value.replace(/\D/g, '').slice(0, 5); // make sure we're only using valid zipcode format
         onSearchUpdate('update', {
-        zipCodes: value ? [value] : []
+            zipCodes: value ? [value] : []
         });
     };
 
     const handleSortChange = (event) => {
         onSearchUpdate('update', {
-        sort: event.target.value
+            sort: event.target.value
         });
     };
 
@@ -142,6 +142,7 @@ const SearchFilters = ({
                 <Button
                 variant="contained"
                 onClick={onSearch}
+                sx={{flexGrow: 1}}
                 >
                     Search
                 </Button>
@@ -156,6 +157,7 @@ const SearchFilters = ({
         </Box>
     );
 
+    // alternative render for mobile devices
     if (isMobile) {
         return (
         <Paper sx={styles.paper}>

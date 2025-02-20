@@ -4,6 +4,7 @@ import { CircularProgress, Alert, Box } from '@mui/material';
 import FetchAPI from '../../utils/api';
 import DogCard from './DogCard';
 import PageControls from './PageControls';
+import { useAuth } from '../auth/AuthProvider';
 
 const styles = {
     loadingContainer: {
@@ -24,12 +25,12 @@ const styles = {
 const PAGE_SIZE = 25; // number of results from api 
 
 const SearchResults = ({ searchState }) => {
+    const { favorites, toggleFavorite } = useAuth(); // centralized favorites with auth context for simplicity of this project
     const [results, setResults] = useState({
         dogs: [],
         loading: true,
         error: null
     });
-    const [favorites, setFavorites] = useState(new Set());
     const [pagination, setPagination] = useState({
         from: 0,
         total: 0
@@ -107,17 +108,9 @@ const SearchResults = ({ searchState }) => {
         fetchDogs(newFrom);
     };
 
-    const handleToggleFavorite = (dog) => {
-        setFavorites(prev => {
-        const newFavorites = new Set(prev);
-        if (newFavorites.has(dog.id)) {
-            newFavorites.delete(dog.id);
-        } else {
-            newFavorites.add(dog.id);
-        }
-        return newFavorites;
-        });
-    };
+    const currentPage = Math.floor(pagination.from / PAGE_SIZE) + 1;
+    const hasNextPage = pagination.from + PAGE_SIZE < pagination.total;
+    const hasPrevPage = pagination.from > 0;
 
     if (results.loading) {
         return (
@@ -135,20 +128,18 @@ const SearchResults = ({ searchState }) => {
         return <Alert severity="info">No dogs found matching your criteria. Try adjusting your filters!</Alert>;
     }
 
-    const currentPage = Math.floor(pagination.from / PAGE_SIZE) + 1;
-    const hasNextPage = pagination.from + PAGE_SIZE < pagination.total;
-    const hasPrevPage = pagination.from > 0;
 
     return (
         <Box>
+            {/* Main Content */}
             <Grid container>
                 {results.dogs.map((dog) => (
-                <Grid key={dog.id} item sx={styles.gridItem}>
+                <Grid key={dog.id} item='true' sx={styles.gridItem}>
                     <Box p={1}>
                     <DogCard
                     dog={dog}
                     isFavorite={favorites.has(dog.id)}
-                    onToggleFavorite={handleToggleFavorite}
+                    onToggleFavorite={() => toggleFavorite(dog.id)}
                     />
                     </Box>
                 </Grid>

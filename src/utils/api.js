@@ -1,5 +1,4 @@
 import axios from 'axios'; 
-import { FETCH_API_BASE_URL } from '../constants';
 
 // custom event for auth based errors to avoid looping issues 
 export const AUTH_ERROR_EVENT = 'fetch-auth-error';
@@ -9,7 +8,7 @@ const emitAuthError = () => {
 
 // Create the axios instance 
 const axiosInstance = axios.create({
-    baseURL: FETCH_API_BASE_URL,
+    baseURL: import.meta.env.VITE_API_BASE_URL,
     withCredentials: true,  //include for auth cookies
     headers: {
         'Content-Type': 'application/json',

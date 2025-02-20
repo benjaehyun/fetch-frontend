@@ -7,7 +7,7 @@ const ProtectedRoute = ({ children }) => {
     const location = useLocation();
 
     if (isLoading) {
-        return <div>Loading...</div>; // Or a proper loading component
+        return <div>Loading...</div>; 
     }
 
     if (!user) {

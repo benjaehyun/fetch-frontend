@@ -131,8 +131,8 @@ const Login = () => {
                         onChange={handleChange}
                         disabled={isLoading}
                         sx={{mb:2}}
-                        error={!!validation.nameError}
-                        helperText={validation.nameError}
+                        error={!!validation.nameError} // error bool 
+                        helperText={validation.nameError} // displaying error msg
                         />
                         
                         <TextField
@@ -154,7 +154,7 @@ const Login = () => {
                         fullWidth
                         variant='contained'
                         size='large'
-                        disabled={isLoading || !validation.isValid}
+                        disabled={isLoading || !validation.isValid} // conditions for when users can submit the login request 
                         sx={{
                             py:1.5,
                             bgcolor: !validation.isValid ? 'action.disabledBackground' : 'primary.main'
