@@ -1,6 +1,8 @@
 # Fetch Frontend Take-Home Project
 
-A React application that helps users search through and match with shelter dogs. Users can filter dogs by various criteria, favorite potential matches, and generate matches based on their favorites.
+Live Site: [Fetch Frontend](https://fetch-frontend-eight.vercel.app)
+
+A React application that helps users search through and match with dogs provided by the fetch api. Users can filter dogs by various criteria, favorite potential matches, and generate matches based on their favorites.
 
 ## Prerequisites
 
