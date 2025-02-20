@@ -104,7 +104,7 @@ const SearchFilters = ({
                 onChange={handleAgeRangeChange}
                 valueLabelDisplay="auto"
                 min={0}
-                max={20}
+                max={14}
                 step={1}
                 />
             </Box>
